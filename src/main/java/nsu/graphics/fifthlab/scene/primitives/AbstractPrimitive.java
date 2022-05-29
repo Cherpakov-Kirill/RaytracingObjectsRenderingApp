@@ -4,22 +4,20 @@ import nsu.graphics.fifthlab.MathUtils;
 import nsu.graphics.fifthlab.Point3D;
 import nsu.graphics.fifthlab.Vector;
 import nsu.graphics.fifthlab.panels.scene.Painter;
+import nsu.graphics.fifthlab.render.Ray;
+import nsu.graphics.fifthlab.RayColor;
 
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
 public abstract class AbstractPrimitive {
-    ///reflection coefficients
-    protected double KDr;
-    protected double KDg;
-    protected double KDb;
+    ///diffuse reflection coefficients
+    protected RayColor KD;
     ///specular reflection coefficients
-    protected double KSr;
-    protected double KSg;
-    protected double KSb;
+    protected RayColor KS;
     ///the indicator of specularity
-    protected double Power;
+    protected double power;
 
     //Rotate
     protected double[][] rotateX;
@@ -31,25 +29,26 @@ public abstract class AbstractPrimitive {
     protected List<Point3D> globalObjectPoints;
     protected List<Point> camProjectionPoints;
 
-    public AbstractPrimitive(double KDr, double KDg, double KDb, double KSr, double KSg, double KSb, double Power) {
-        this.KDr = KDr;
-        this.KDg = KDg;
-        this.KDb = KDb;
-        this.KSr = KSr;
-        this.KSg = KSg;
-        this.KSb = KSb;
-        this.Power = Power;
+    public AbstractPrimitive(RayColor diffuseReflection, RayColor specularReflection, double power) {
+        this.KD = diffuseReflection;
+        this.KS = specularReflection;
+        this.power = power;
     }
 
-    public AbstractPrimitive(OpticalCharacteristics opticalCharacteristics) {
-        this.KDr = opticalCharacteristics.KDr;
-        this.KDg = opticalCharacteristics.KDg;
-        this.KDb = opticalCharacteristics.KDb;
-        this.KSr = opticalCharacteristics.KSr;
-        this.KSg = opticalCharacteristics.KSg;
-        this.KSb = opticalCharacteristics.KSb;
-        this.Power = opticalCharacteristics.Power;
+    // reflection coefficients
+
+    public RayColor getDiffuseReflectionCoefficient() {
+        return new RayColor(KD);
     }
+
+    public RayColor getSpecularReflectionCoefficient() {
+        return new RayColor(KS);
+    }
+
+    public double getPower(){
+        return power;
+    }
+
 
     //Rotations
     protected void initRotateXOperator(double deg) {
@@ -142,6 +141,14 @@ public abstract class AbstractPrimitive {
     //Draw method
 
     public abstract void drawPrimitive(Painter painter);
+
+    //Intersection with Ray
+
+    public abstract double intersect(Ray ray);
+
+    public abstract boolean isBelongsToTheFigure(Point3D point);
+
+    public abstract Vector getNormal(Point3D point);
 
     //Primitive getters
 

@@ -46,9 +46,7 @@ public class ScenePanel extends JPanel implements RenderListener, MouseWheelList
         this.objectColor = new Color(objectColor);
         //openSceneFile(new File("/home/kirill/EngineeringGraphics/EG_lab5/build/classes/java/Test1.scene"));
         //setDefaultRender();
-        addMouseListener(this);
-        addMouseMotionListener(this);
-        addMouseWheelListener(this);
+
         ctrlIsPressed = false;
     }
 
@@ -131,6 +129,8 @@ public class ScenePanel extends JPanel implements RenderListener, MouseWheelList
             Graphics2D g = newResizedImage.createGraphics();
             g.setComposite(AlphaComposite.Src);
             g.fillRect(0, 0, width, height);
+            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                    RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             g.setRenderingHint(RenderingHints.KEY_RENDERING,
                     RenderingHints.VALUE_RENDER_QUALITY);
             g.drawImage(img, (newImgWidth - img.getWidth()) / 2, (newImgHeight - img.getHeight()) / 2, img.getWidth(), img.getHeight(), null);
@@ -245,8 +245,22 @@ public class ScenePanel extends JPanel implements RenderListener, MouseWheelList
     public void mouseMoved(MouseEvent e) {
     }
 
-
-    public void draw() {
+    public void selectView() {
         drawWireframeObjects();
+        addMouseListener(this);
+        addMouseMotionListener(this);
+        addMouseWheelListener(this);
+    }
+
+    public void renderObjects() {
+        img = createEmptyImage(panelSize.width, panelSize.height);
+        render.renderScene(painter);
+        repaint();
+        revalidate();
+        spIm.validate();
+        spIm.repaint();
+        removeMouseListener(this);
+        removeMouseMotionListener(this);
+        removeMouseWheelListener(this);
     }
 }

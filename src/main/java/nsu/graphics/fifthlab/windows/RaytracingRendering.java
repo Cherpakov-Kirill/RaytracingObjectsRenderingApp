@@ -163,7 +163,6 @@ public class RaytracingRendering extends MainFrame implements ComponentListener,
 
     //View/Settings
     public void renderingSettings() {
-        scenePanel.draw();
     }
 
     //View/Palette
@@ -179,11 +178,13 @@ public class RaytracingRendering extends MainFrame implements ComponentListener,
     //View/Select view
     public void selectView() {
         changeSelectedButtonForView("Rendering/Select view");
+        scenePanel.selectView();
     }
 
     //View/Render objects
     public void renderObjects() {
         changeSelectedButtonForView("Rendering/Render objects");
+        scenePanel.renderObjects();
     }
 
     //File/Exit - exits application

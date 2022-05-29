@@ -4,10 +4,10 @@ import nsu.graphics.fifthlab.Point3D;
 import nsu.graphics.fifthlab.panels.scene.Painter;
 import nsu.graphics.fifthlab.scene.primitives.*;
 import nsu.graphics.fifthlab.scene.primitives.Rectangle;
+import nsu.graphics.fifthlab.RayColor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -16,7 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Scene {
-    private AmbientLight ambientLight;
+    private RayColor ambientLight;
     private final List<LightSource> lightSources;
     private final List<AbstractPrimitive> primitives;
     private final List<Box> boxes;
@@ -28,7 +28,7 @@ public class Scene {
         int Ar = ambientLight.getInt("Ar");
         int Ag = ambientLight.getInt("Ag");
         int Ab = ambientLight.getInt("Ab");
-        this.ambientLight = new AmbientLight(Ar, Ag, Ab);
+        this.ambientLight = new RayColor(Ar, Ag, Ab);
     }
 
     private void parseLightSource(JSONObject lightSource) {
@@ -49,15 +49,18 @@ public class Scene {
         }
     }
 
-    private OpticalCharacteristics parseOpticalCharacteristics(JSONObject jsonObject) {
+    private RayColor parseDiffuseReflection(JSONObject jsonObject) {
         double KDr = jsonObject.getDouble("KDr");
         double KDg = jsonObject.getDouble("KDg");
         double KDb = jsonObject.getDouble("KDb");
+        return new RayColor(KDr, KDg, KDb);
+    }
+
+    private RayColor parseSpecularReflection(JSONObject jsonObject) {
         double KSr = jsonObject.getDouble("KSr");
         double KSg = jsonObject.getDouble("KSg");
         double KSb = jsonObject.getDouble("KSb");
-        double Power = jsonObject.getDouble("Power");
-        return new OpticalCharacteristics(KDr, KDg, KDb, KSr, KSg, KSb, Power);
+        return new RayColor(KSr, KSg, KSb);
     }
 
     private Point3D parsePoint(JSONObject jsonObject, String name) {
@@ -76,8 +79,10 @@ public class Scene {
             int MAXx = box.getInt("MAXx");
             int MAXy = box.getInt("MAXy");
             int MAXz = box.getInt("MAXz");
-            OpticalCharacteristics opticalCharacteristics = parseOpticalCharacteristics(box);
-            this.boxes.add(new Box(opticalCharacteristics, new Point3D(MINx, MINy, MINz), new Point3D(MAXx, MAXy, MAXz)));
+            RayColor diffuseReflection = parseDiffuseReflection(box);
+            RayColor specularReflection = parseSpecularReflection(box);
+            double power = box.getDouble("Power");
+            this.boxes.add(new Box(diffuseReflection, specularReflection, power, new Point3D(MINx, MINy, MINz), new Point3D(MAXx, MAXy, MAXz)));
         }
     }
 
@@ -88,8 +93,10 @@ public class Scene {
             Point3D point2 = parsePoint(rectangle, "POINT" + 2);
             Point3D point3 = parsePoint(rectangle, "POINT" + 3);
             Point3D point4 = parsePoint(rectangle, "POINT" + 4);
-            OpticalCharacteristics opticalCharacteristics = parseOpticalCharacteristics(rectangle);
-            this.rectangles.add(new Rectangle(opticalCharacteristics, point1, point2, point3, point4));
+            RayColor diffuseReflection = parseDiffuseReflection(rectangle);
+            RayColor specularReflection = parseSpecularReflection(rectangle);
+            double power = rectangle.getDouble("Power");
+            this.rectangles.add(new Rectangle(diffuseReflection, specularReflection, power, point1, point2, point3, point4));
         }
     }
 
@@ -98,8 +105,10 @@ public class Scene {
             JSONObject sphere = spheres.getJSONObject(i);
             Point3D center = parsePoint(sphere, "CENTER");
             int radius = sphere.getInt("RADIUS");
-            OpticalCharacteristics opticalCharacteristics = parseOpticalCharacteristics(sphere);
-            this.spheres.add(new Sphere(opticalCharacteristics, center, radius));
+            RayColor diffuseReflection = parseDiffuseReflection(sphere);
+            RayColor specularReflection = parseSpecularReflection(sphere);
+            double power = sphere.getDouble("Power");
+            this.spheres.add(new Sphere(diffuseReflection, specularReflection, power, center, radius));
         }
     }
 
@@ -109,8 +118,10 @@ public class Scene {
             Point3D point1 = parsePoint(triangle, "POINT" + 1);
             Point3D point2 = parsePoint(triangle, "POINT" + 2);
             Point3D point3 = parsePoint(triangle, "POINT" + 3);
-            OpticalCharacteristics opticalCharacteristics = parseOpticalCharacteristics(triangle);
-            this.triangles.add(new Triangle(opticalCharacteristics, point1, point2, point3));
+            RayColor diffuseReflection = parseDiffuseReflection(triangle);
+            RayColor specularReflection = parseSpecularReflection(triangle);
+            double power = triangle.getDouble("Power");
+            this.triangles.add(new Triangle(diffuseReflection, specularReflection, power, point1, point2, point3));
         }
     }
 
@@ -145,10 +156,22 @@ public class Scene {
         }
     }
 
+    public List<AbstractPrimitive> getPrimitives() {
+        return primitives;
+    }
+
     public void drawPrimitives(Painter painter) {
         for (AbstractPrimitive primitive : primitives) {
             primitive.drawPrimitive(painter);
         }
+    }
+
+    public RayColor getAmbientLight() {
+        return new RayColor(ambientLight);
+    }
+
+    public List<LightSource> getLightSources() {
+        return lightSources;
     }
 
     public Point3D getMinPoint() {

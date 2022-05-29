@@ -11,7 +11,7 @@ public class Vector {
         this.z = z;
     }
 
-    private void setPoint(Point3D point){
+    private void setPoint(Point3D point) {
         x = point.x();
         y = point.y();
         z = point.z();
@@ -31,8 +31,8 @@ public class Vector {
         this.z = finish.z() - start.z();
     }
 
-    private void rotate(double[][] rotateMatrix){
-        Point3D point = MathUtils.rotatePointAroundAxis(rotateMatrix,getVertex());
+    private void rotate(double[][] rotateMatrix) {
+        Point3D point = MathUtils.rotatePointAroundAxis(rotateMatrix, getVertex());
         setPoint(point);
     }
 
@@ -69,12 +69,20 @@ public class Vector {
     }
 
     @Override
-    public String toString(){
-        return "{"+x+","+y+","+z+"}";
+    public String toString() {
+        return "{" + x + "," + y + "," + z + "}";
     }
 
     public void normalize() {
         mulCoordinates(1 / getLength());
+    }
+
+    public static Vector mulVectorOnCoefficient(Vector vector, double coefficient) {
+        return new Vector(vector.x * coefficient, vector.y * coefficient, vector.z * coefficient);
+    }
+
+    public static Vector getNegateVector(Vector vector) {
+        return new Vector(-vector.x, -vector.y, -vector.z);
     }
 
     public static double getScalarMul(Vector vector1, Vector vector2) {
@@ -95,5 +103,9 @@ public class Vector {
 
     public static Vector vectorSubtraction(Vector reduced, Vector deductible) {
         return new Vector(reduced.x - deductible.x, reduced.y - deductible.y, reduced.z - deductible.z);
+    }
+
+    public static Vector pointsSubtraction(Point3D reduced, Point3D deductible) {
+        return new Vector(reduced.x() - deductible.x(), reduced.y() - deductible.y(), reduced.z() - deductible.z());
     }
 }

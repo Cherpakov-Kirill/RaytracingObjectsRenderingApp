@@ -1,7 +1,10 @@
 package nsu.graphics.fifthlab.scene.primitives;
 
 import nsu.graphics.fifthlab.Point3D;
+import nsu.graphics.fifthlab.Vector;
 import nsu.graphics.fifthlab.panels.scene.Painter;
+import nsu.graphics.fifthlab.render.Ray;
+import nsu.graphics.fifthlab.RayColor;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -18,8 +21,8 @@ public class Sphere extends AbstractPrimitive {
     private final Point3D center;
     private final int radius;
 
-    public Sphere(OpticalCharacteristics opticalCharacteristics, Point3D center, int radius) {
-        super(opticalCharacteristics);
+    public Sphere(RayColor diffuseReflection, RayColor specularReflection, double power, Point3D center, int radius) {
+        super(diffuseReflection, specularReflection, power);
         this.center = center;
         this.radius = radius;
         numberOfTurns = numberOfSections * numberOfLinesPerSection;
@@ -73,6 +76,46 @@ public class Sphere extends AbstractPrimitive {
                 }
             }
         }
+    }
+
+    @Override
+    public double intersect(Ray ray) {
+        Vector centerFromPoint = new Vector(ray.getPixel(), center);
+        double B = Vector.getScalarMul(centerFromPoint, ray.getDirection());
+        double C = Vector.getScalarMul(centerFromPoint, centerFromPoint) - radius * radius;
+        double D = B * B - C;
+        //double D = radius*radius - Vector.getScalarMul(centerFromPoint,centerFromPoint)-B*B;
+        if (D < 0) {
+            return Double.MAX_VALUE;
+        } else {
+            double sqrt = Math.sqrt(D);
+            double t0 = -B - sqrt;
+            if (t0 >= 0) {
+                return t0;
+            } else {
+                double t1 = -B + sqrt;
+                if (t1 >= 0) return t1;
+                else return Double.MAX_VALUE;
+            }
+        }
+
+    }
+
+    @Override
+    public boolean isBelongsToTheFigure(Point3D point) {
+        double rx = point.x() - center.x();
+        double ry = point.y() - center.y();
+        double rz = point.z() - center.z();
+        double dist = rx * rx + ry * ry + rz * rz;
+        return dist - radius < 1e-5;
+    }
+
+    @Override
+    public Vector getNormal(Point3D point) {
+        double x = (point.x() - center.x()) / radius;
+        double y = (point.y() - center.y()) / radius;
+        double z = (point.z() - center.z()) / radius;
+        return new Vector(x, y, z);
     }
 
     @Override
