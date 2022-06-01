@@ -94,7 +94,26 @@ public class ScenePanel extends JPanel implements RenderListener, MouseWheelList
 
     public void normalizeObjectPosition() {
         render.initCam(scene);
+        selectView();
+    }
+
+    public void selectView() {
         drawWireframeObjects();
+        addMouseListener(this);
+        addMouseMotionListener(this);
+        addMouseWheelListener(this);
+    }
+
+    public void renderObjects() {
+        img = createEmptyImage(panelSize.width, panelSize.height);
+        render.renderScene(painter);
+        repaint();
+        revalidate();
+        spIm.validate();
+        spIm.repaint();
+        removeMouseListener(this);
+        removeMouseMotionListener(this);
+        removeMouseWheelListener(this);
     }
 
     private void drawWireframeObjects() {
@@ -178,7 +197,7 @@ public class ScenePanel extends JPanel implements RenderListener, MouseWheelList
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        if (ctrlIsPressed) render.moveCamera(e.getWheelRotation());
+        if (ctrlIsPressed) render.zoom(e.getWheelRotation());
         else render.mulDistanceToProjection(e.getWheelRotation());
         drawWireframeObjects();
     }
@@ -192,7 +211,21 @@ public class ScenePanel extends JPanel implements RenderListener, MouseWheelList
         //System.out.println("Pressed: " + e.getKeyCode());
         if (e.getKeyCode() == 17) {
             ctrlIsPressed = true;
+            return;
         }
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            render.moveRight();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            render.moveLeft();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_UP) {
+            render.moveUp();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+            render.moveDown();
+        }
+        drawWireframeObjects();
     }
 
     @Override
@@ -215,7 +248,7 @@ public class ScenePanel extends JPanel implements RenderListener, MouseWheelList
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        int currDegreeZ = e.getX() - lastX;
+        int currDegreeZ = lastX - e.getX();
         int currDegreeY = e.getY() - lastY;
         render.rotateCam(currDegreeZ, currDegreeY);
         updateMousePoint(e.getPoint());
@@ -243,24 +276,5 @@ public class ScenePanel extends JPanel implements RenderListener, MouseWheelList
 
     @Override
     public void mouseMoved(MouseEvent e) {
-    }
-
-    public void selectView() {
-        drawWireframeObjects();
-        addMouseListener(this);
-        addMouseMotionListener(this);
-        addMouseWheelListener(this);
-    }
-
-    public void renderObjects() {
-        img = createEmptyImage(panelSize.width, panelSize.height);
-        render.renderScene(painter);
-        repaint();
-        revalidate();
-        spIm.validate();
-        spIm.repaint();
-        removeMouseListener(this);
-        removeMouseMotionListener(this);
-        removeMouseWheelListener(this);
     }
 }

@@ -1,5 +1,6 @@
 package nsu.graphics.fifthlab.render;
 
+import nsu.graphics.fifthlab.MathUtils;
 import nsu.graphics.fifthlab.Point3D;
 import nsu.graphics.fifthlab.Vector;
 import nsu.graphics.fifthlab.panels.scene.Painter;
@@ -19,15 +20,17 @@ import java.nio.file.Files;
 import java.util.List;
 
 public class Render {
-    private RenderListener listener;
-    private RayColor backgroundColor;
-    private double gamma;
+    private static final Vector xAxis = new Vector(1, 0, 0);
+    private static final Vector yAxis = new Vector(0, 1, 0);
+    private static final Vector zAxis = new Vector(0, 0, 1);
+    private final RenderListener listener;
+    private final RayColor backgroundColor;
+    private final double gamma;
     private int depth;
-    private Quality quality;
+    private final Quality quality;
     private Point3D camPosition;
     private Point3D viewPoint;
     private Vector viewVector;
-    private Vector viewDirection;
     private Vector normalizedViewVector;
     private Vector camShift;
     private Vector up;
@@ -38,6 +41,71 @@ public class Render {
     private Vector horizontalCamMatrix;
     private Vector verticalCamMatrix;
     private Scene scene;
+
+    //Rotate
+    private double[][] rotateX;
+    private double[][] rotateY;
+    private double[][] rotateZ;
+
+    //Rotations
+    private void initRotateXOperator(double deg) {
+        rotateX = MathUtils.initRotateXOperator(deg);
+    }
+
+    private void initRotateYOperator(double deg) {
+        rotateY = MathUtils.initRotateYOperator(deg);
+    }
+
+    private void initRotateZOperator(double deg) {
+        rotateZ = MathUtils.initRotateZOperator(deg);
+    }
+
+    private Point3D rotatePointAroundX(Point3D point) {
+        return MathUtils.rotatePointAroundAxis(rotateX, point);
+    }
+
+    private Point3D rotatePointAroundY(Point3D point) {
+        return MathUtils.rotatePointAroundAxis(rotateY, point);
+    }
+
+    private Point3D rotatePointAroundZ(Point3D point) {
+        return MathUtils.rotatePointAroundAxis(rotateZ, point);
+    }
+
+    private void initRotationBeforeCamCorrection() {
+        up.normalize();
+        Point3D axisPoint = up.getVertex();
+        double d = Math.sqrt(axisPoint.y() * axisPoint.y() + axisPoint.z() * axisPoint.z());
+        double cos = axisPoint.z() / d;
+
+        double alpha = Math.toDegrees(Math.acos(cos));
+        initRotateXOperator(alpha);
+        Vector rotatedXUp = new Vector(rotatePointAroundX(axisPoint));
+        double angleX = rotatedXUp.getDegreeBetween(yAxis);
+        if (Math.round(angleX) != 90 || Vector.getScalarMul(rotatedXUp, zAxis) < 0) {
+            alpha *= -1;
+            initRotateXOperator(alpha);
+        }
+
+        double betta = Math.toDegrees(Math.acos(d));
+        initRotateYOperator(betta);
+        Vector rotatedYUp = new Vector(rotatePointAroundY(rotatePointAroundX(axisPoint)));
+        double angleY = rotatedYUp.getDegreeBetween(zAxis);
+        if (Math.round(angleY) != 0) {
+            betta *= -1;
+            initRotateYOperator(betta);
+        }
+
+        Vector newView = new Vector(rotatePointAroundY(rotatePointAroundX(viewVector.getVertex())));
+        double gamma = newView.getDegreeBetween(xAxis);
+        initRotateZOperator(gamma);
+        Vector rotatedZ = new Vector(rotatePointAroundZ(newView.getVertex()));
+        double angleZ = rotatedZ.getDegreeBetween(xAxis);
+        if (Math.round(angleZ) != 0) {
+            gamma *= -1;
+            initRotateZOperator(gamma);
+        }
+    }
 
     private void initCamParameters() {
         this.normalizedViewVector = new Vector(viewVector);
@@ -63,8 +131,6 @@ public class Render {
         double camX = minPoint.x() - delta.z() / (Math.tan(Math.toRadians(15)));
         camPosition = new Point3D(camX, viewPoint.y(), viewPoint.z());
         viewVector = new Vector(viewPoint, camPosition);
-        viewDirection = new Vector(viewVector);
-        viewDirection.normalize();
         initCamParameters();
 
         Zn = (minPoint.x() - camPosition.x()) / 2.0;
@@ -119,8 +185,6 @@ public class Render {
 
             this.up = new Vector(parsePoint(sampleObject, "UP"));
             this.viewVector = new Vector(viewPoint, camPosition);
-            viewDirection = new Vector(viewVector);
-            viewDirection.normalize();
 
             Vector right = Vector.vectorMultiply(viewVector, up);
             this.up = Vector.vectorMultiply(right, viewVector);
@@ -163,19 +227,25 @@ public class Render {
     }
 
     public void renderScene(Painter painter) {
-        int startY = (int) (camPosition.y() - widthCamMatrix / 2);
-        int startZ = (int) (camPosition.z() - heightCamMatrix / 2);
+        initRotationBeforeCamCorrection();
+        Vector camMatrixPointOnView = Vector.vectorSum((new Vector(camPosition)), Vector.mulVectorOnCoefficient(normalizedViewVector, Zn));
+        Vector startMatrix = Vector.vectorSubtraction(camMatrixPointOnView, Vector.mulVectorOnCoefficient(horizontalCamMatrix, widthCamMatrix / 2));
+        startMatrix = Vector.vectorSubtraction(startMatrix, Vector.mulVectorOnCoefficient(verticalCamMatrix, heightCamMatrix / 2));
         int x = (int) (camPosition.x() + Zn);
         for (int row = 0; row < heightCamMatrix; row++) { //z
-            int posZ = startZ + row;
+            Vector startRow = Vector.vectorSum(startMatrix, Vector.mulVectorOnCoefficient(verticalCamMatrix, row));
             for (int column = 0; column < widthCamMatrix; column++) { //y
-                int posY = startY + column;
-                Point3D pixel = new Point3D(x, posY, posZ);
+                Vector pos = Vector.vectorSum(startRow, Vector.mulVectorOnCoefficient(horizontalCamMatrix, column));
+                Point3D pixel = pos.getVertex();
                 Vector rayDirection = new Vector(pixel, camPosition);
                 rayDirection.normalize();
                 Ray ray = new Ray(pixel, rayDirection);
                 Color pixelColor = makeTraceRay(ray).toColor();
-                painter.setRenderRGB(pixelColor, (int) (posY - camPosition.y()), (int) (posZ - camPosition.z()));
+                Point3D localPixelPos = Vector.vectorSubtraction(pos, camMatrixPointOnView).getVertex();
+                Point3D rotatedX = rotatePointAroundX(localPixelPos);
+                Point3D rotatedY = rotatePointAroundY(rotatedX);
+                Point3D rotatedZ = rotatePointAroundZ(rotatedY);
+                painter.setRenderRGB(pixelColor, (int) Math.round(rotatedZ.y()), (int) Math.round(rotatedZ.z()));
                 //todo: make progress statusBar
             }
         }
@@ -278,29 +348,43 @@ public class Render {
         return new Vector(viewVector);
     }
 
-    public int getWidthOfCamMatrix() {
-        return (int) Math.ceil(widthCamMatrix);
-    }
-
-    public int getHeightOfCamMatrix() {
-        return (int) Math.ceil(heightCamMatrix);
-    }
-
     public void mulDistanceToProjection(int wheelRotation) {
         if (wheelRotation == 1) Zn *= 1.05;
         if (wheelRotation == -1) Zn *= 0.95;
     }
 
-    public void moveCamera(int wheelRotation) {
+    public void zoom(int wheelRotation) {
         if (wheelRotation == 1) camPosition.addDelta(camShift);
         if (wheelRotation == -1) camPosition.subDelta(camShift);
+    }
+
+    public void moveRight() {
+        camPosition.addDelta(yAxis);
+        viewVector = new Vector(viewPoint, camPosition);
+        initCamParameters();
+    }
+
+    public void moveLeft() {
+        camPosition.subDelta(yAxis);
+        viewVector = new Vector(viewPoint, camPosition);
+        initCamParameters();
+    }
+
+    public void moveUp() {
+        camPosition.addDelta(zAxis);
+        viewVector = new Vector(viewPoint, camPosition);
+        initCamParameters();
+    }
+
+    public void moveDown() {
+        camPosition.subDelta(zAxis);
+        viewVector = new Vector(viewPoint, camPosition);
+        initCamParameters();
     }
 
     public void rotateCam(int degreeZ, int degreeY) {
         viewVector.rotateAroundZAxis(degreeZ);
         viewVector.rotateAroundYAxis(degreeY);
-        viewDirection = new Vector(viewVector);
-        viewDirection.normalize();
         up.rotateAroundZAxis(degreeZ);
         up.rotateAroundYAxis(degreeY);
         Vector newVectorToCam = Vector.vectorSubtraction(new Vector(viewPoint), viewVector);

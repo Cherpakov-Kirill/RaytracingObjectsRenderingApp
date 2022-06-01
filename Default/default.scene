@@ -1,0 +1,106 @@
+{
+  "Ambient light": {
+    "Ar": 140,
+    "Ag": 140,
+    "Ab": 140
+  },
+  "Light sources": {
+    "NL" : 2,
+    "Lights": [
+        {
+            "Lx": 0,
+            "Ly": 0,
+            "Lz": 300,
+            "Lr": 180,
+            "Lg": 170,
+            "Lb": 160
+        },
+        {
+            "Lx": 0,
+            "Ly": 600,
+            "Lz": 300,
+            "Lr": 150,
+            "Lg": 170,
+            "Lb": 160
+        }
+    ]
+  },
+  "Primitives": {
+    "Boxes": [
+    {
+                "MINx": 0,
+                "MINy": 0,
+                "MINz": 0,
+                "MAXx": 100,
+                "MAXy": 100,
+                "MAXz": 100,
+                "KDr": 0.1,
+                "KDg": 0.5,
+                "KDb": 0.3,
+                "KSr": 0.2,
+                "KSg": 0.3,
+                "KSb": 0.4,
+                "Power": 2.0
+
+            }
+    ],
+    "Rectangles": [
+    {
+                "POINT1x": -100,
+                "POINT1y": 0,
+                "POINT1z": -50,
+                "POINT2x": 600,
+                "POINT2y": 0,
+                "POINT2z": -50,
+                "POINT3x": 600,
+                "POINT3y": 600,
+                "POINT3z": -50,
+                "POINT4x": -100,
+                "POINT4y": 600,
+                "POINT4z": -50,
+                "KDr": 0.1,
+                "KDg": 0.2,
+                "KDb": 0.3,
+                "KSr": 0.3,
+                "KSg": 0.4,
+                "KSb": 0.5,
+                "Power": 2.0
+            }
+    ],
+    "Spheres": [
+{
+                    "CENTERx": 200,
+                    "CENTERy": 250,
+                    "CENTERz": 200,
+                    "RADIUS": 150,
+                    "KDr": 0.1,
+                    "KDg": 0.2,
+                    "KDb": 0.3,
+                    "KSr": 0.3,
+                    "KSg": 0.4,
+                    "KSb": 0.5,
+                    "Power": 2.0
+                }
+    ],
+    "Triangles": [
+    {
+                "POINT1x": 0,
+                "POINT1y": 500,
+                "POINT1z": 0,
+                "POINT2x": 300,
+                "POINT2y": 450,
+                "POINT2z": 0,
+                "POINT3x": 200,
+                "POINT3y": 500,
+                "POINT3z": 300,
+                "KDr": 0.3,
+                "KDg": 0.1,
+                "KDb": 0.7,
+                "KSr": 0.1,
+                "KSg": 0.1,
+                "KSb": 0.1,
+                "Power": 2.0
+            }
+    ]
+  }
+}

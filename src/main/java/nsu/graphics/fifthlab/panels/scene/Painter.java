@@ -35,7 +35,7 @@ public class Painter {
         int yScreen = getYOnImage(y);
         try {
             bufferedImage.setRGB(xScreen, yScreen, color.getRGB());
-        }catch(Exception e){
+        } catch (Exception e) {
             System.err.println(xScreen + " " + yScreen);
             throw e;
         }
@@ -72,11 +72,10 @@ public class Painter {
     }
 
     private int getXOnImage(int x) {
-        return imSize.width / 2 + x;
+        return imSize.width / 2 - x;
     }
 
     private int getYOnImage(int y) {
-        //return imSize.height / 2 + y;
         return imSize.height / 2 - y;
     }
 }

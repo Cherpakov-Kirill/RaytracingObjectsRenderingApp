@@ -1,0 +1,43 @@
+{
+  "Ambient light": {
+    "Ar": 76,
+    "Ag": 76,
+    "Ab": 76
+  },
+  "Light sources": {
+    "NL" : 1,
+    "Lights": [
+        {
+            "Lx": 0,
+            "Ly": 0,
+            "Lz": 300,
+            "Lr": 180,
+            "Lg": 170,
+            "Lb": 160
+        }
+    ]
+  },
+  "Primitives": {
+    "Boxes": [
+    ],
+    "Rectangles": [
+    ],
+    "Spheres": [
+    {
+                "CENTERx": 200,
+                "CENTERy": 200,
+                "CENTERz": 200,
+                "RADIUS": 150,
+                "KDr": 0.1,
+                "KDg": 0.2,
+                "KDb": 0.3,
+                "KSr": 0.15,
+                "KSg": 0.16,
+                "KSb": 0.17,
+                "Power": 2.0
+            }
+    ],
+    "Triangles": [
+    ]
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "Ambient light": {
+    "Ar": 76,
+    "Ag": 76,
+    "Ab": 76
+  },
+  "Light sources": {
+    "NL" : 2,
+    "Lights": [
+        {
+            "Lx": 2,
+            "Ly": 10,
+            "Lz": -5,
+            "Lr": 255,
+            "Lg": 255,
+            "Lb": 255
+        },
+        {
+            "Lx": 11,
+            "Ly": 13,
+            "Lz": 14,
+            "Lr": 120,
+            "Lg": 121,
+            "Lb": 122
+        }
+    ]
+  },
+  "Primitives": {
+    "Boxes": [
+        {
+            "MINx": 30,
+            "MINy": 70,
+            "MINz": 0,
+            "MAXx": 150,
+            "MAXy": 150,
+            "MAXz": 150,
+            "KDr": 0.1,
+            "KDg": 0.2,
+            "KDb": 0.3,
+            "KSr": 0.15,
+            "KSg": 0.16,
+            "KSb": 0.17,
+            "Power": 2.0
+
+        },
+        {
+                    "MINx": 50,
+                    "MINy": 300,
+                    "MINz": 0,
+                    "MAXx": 200,
+                    "MAXy": 500,
+                    "MAXz": 200,
+                    "KDr": 0.1,
+                    "KDg": 0.2,
+                    "KDb": 0.3,
+                    "KSr": 0.15,
+                    "KSg": 0.16,
+                    "KSb": 0.17,
+                    "Power": 2.0
+
+                }
+    ],
+    "Rectangles": [
+        {
+            "POINT1x": 0,
+            "POINT1y": 0,
+            "POINT1z": 0,
+            "POINT2x": 500,
+            "POINT2y": 0,
+            "POINT2z": 0,
+            "POINT3x": 500,
+            "POINT3y": 500,
+            "POINT3z": 0,
+            "POINT4x": 0,
+            "POINT4y": 500,
+            "POINT4z": 0,
+            "KDr": 0.1,
+            "KDg": 0.2,
+            "KDb": 0.3,
+            "KSr": 0.15,
+            "KSg": 0.16,
+            "KSb": 0.17,
+            "Power": 2.0
+        },
+        {
+                    "POINT1x": 0,
+                    "POINT1y": 0,
+                    "POINT1z": 0,
+                    "POINT2x": 0,
+                    "POINT2y": 500,
+                    "POINT2z": 0,
+                    "POINT3x": 0,
+                    "POINT3y": 500,
+                    "POINT3z": 500,
+                    "POINT4x": 0,
+                    "POINT4y": 0,
+                    "POINT4z": 500,
+                    "KDr": 0.1,
+                    "KDg": 0.2,
+                    "KDb": 0.3,
+                    "KSr": 0.15,
+                    "KSg": 0.16,
+                    "KSb": 0.17,
+                    "Power": 2.0
+                }
+    ],
+    "Spheres": [
+    {
+                "CENTERx": 200,
+                "CENTERy": 200,
+                "CENTERz": 200,
+                "RADIUS": 150,
+                "KDr": 0.1,
+                "KDg": 0.2,
+                "KDb": 0.3,
+                "KSr": 0.15,
+                "KSg": 0.16,
+                "KSb": 0.17,
+                "Power": 2.0
+            }
+    ],
+    "Triangles": [
+    {
+                "POINT1x": 0,
+                "POINT1y": 0,
+                "POINT1z": 0,
+                "POINT2x": 0,
+                "POINT2y": 0,
+                "POINT2z": 500,
+                "POINT3x": 500,
+                "POINT3y": 0,
+                "POINT3z": 0,
+                "KDr": 0.1,
+                "KDg": 0.2,
+                "KDb": 0.3,
+                "KSr": 0.15,
+                "KSg": 0.16,
+                "KSb": 0.17,
+                "Power": 2.0
+            }
+    ]
+  }
+}

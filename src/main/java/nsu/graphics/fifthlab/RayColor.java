@@ -4,49 +4,50 @@ package nsu.graphics.fifthlab;
 import java.awt.*;
 
 public class RayColor {
-    private double reb;
+    private double red;
     private double green;
     private double blue;
 
-    public RayColor(double reb, double green, double blue) {
-        this.reb = reb;
+    public RayColor(double red, double green, double blue) {
+        this.red = red;
         this.green = green;
         this.blue = blue;
     }
 
-    public RayColor(RayColor rayColor){
-        this.reb = rayColor.reb;
+    public RayColor(RayColor rayColor) {
+        this.red = rayColor.red;
         this.green = rayColor.green;
         this.blue = rayColor.blue;
     }
 
     public void mulByCoefficient(double coefficient) {
-        reb *= coefficient;
+        red *= coefficient;
         green *= coefficient;
         blue *= coefficient;
     }
 
     public void addColor(RayColor rayColor) {
-        reb += rayColor.reb;
+        red += rayColor.red;
         green += rayColor.green;
         blue += rayColor.blue;
     }
 
     public void scalarProd(RayColor rayColor) {
-        reb *= rayColor.reb;
+        red *= rayColor.red;
         green *= rayColor.green;
         blue *= rayColor.blue;
     }
 
     public Color toColor() {
-        return new Color((int) Math.round(reb),
-                (int) Math.round(green),
-                (int) Math.round(blue));
+        int r = Math.min((int) Math.round(red), 255);
+        int g = Math.min((int) Math.round(green), 255);
+        int b = Math.min((int) Math.round(blue), 255);
+        return new Color(r, g, b);
     }
 
 
     public int getIntRed() {
-        return (int) Math.round(reb);
+        return (int) Math.round(red);
     }
 
     public int getIntGreen() {

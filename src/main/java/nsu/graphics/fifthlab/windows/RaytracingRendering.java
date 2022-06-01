@@ -57,17 +57,17 @@ public class RaytracingRendering extends MainFrame implements ComponentListener,
             addToolBarToggleButton("Rendering/Render objects");
 
             JScrollPane scrollPane = new JScrollPane();
-            scenePanel = new ScenePanel(scrollPane, propertyList.wireframeObjectWindowWidth-20, propertyList.wireframeObjectWindowHeight-100, propertyList.objectColor);
+            scenePanel = new ScenePanel(scrollPane, propertyList.wireframeObjectWindowWidth - 20, propertyList.wireframeObjectWindowHeight - 100, propertyList.objectColor);
             scrollPane.setViewportView(scenePanel);
             add(scrollPane);
             addComponentListener(this);
             setBackground(Color.WHITE);
             String path = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
             System.out.println(path);
-            path = path.substring(0,path.lastIndexOf('/'));
-            path+="/Data/Default/default.scene";
+            path = path.substring(0, path.lastIndexOf('/'));
+            path += "/Data/Default/default.scene";
             File file = new File(path);
-            if(file.exists()){
+            if (file.exists()) {
                 scenePanel.openSceneFile(file);
                 System.out.println("Opened scene file " + file.getAbsolutePath());
                 tryToFindAndOpenRenderSettings(file.getAbsolutePath());
@@ -124,16 +124,15 @@ public class RaytracingRendering extends MainFrame implements ComponentListener,
     }
 
     private void tryToFindAndOpenRenderSettings(String scenePath) {
-        String renderPath = scenePath.substring(0, scenePath.lastIndexOf('.')+1);
+        String renderPath = scenePath.substring(0, scenePath.lastIndexOf('.') + 1);
         renderPath += "render";
         File file = new File(renderPath);
-        if (file.exists()){
+        if (file.exists()) {
             System.out.println("Render settings file exists");
             scenePanel.openRenderFile(file);
             showMessage("Opened render settings file:\n" + file.getAbsolutePath(), "Render settings file exists");
             System.out.println("Opened render settings file " + file.getAbsolutePath());
-        }
-        else {
+        } else {
             scenePanel.setDefaultRender();
             System.out.println("Render settings file not exists");
         }
@@ -158,6 +157,7 @@ public class RaytracingRendering extends MainFrame implements ComponentListener,
 
     //View/Init
     public void init() {
+        changeSelectedButtonForView("Rendering/Select view");
         scenePanel.normalizeObjectPosition();
     }
 
